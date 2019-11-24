@@ -1,0 +1,50 @@
+{
+	"index.html": {
+		"resources": [
+			"appjs/common.js",
+			"images/cbd.jpg",
+			"images/muwu.jpg",
+			"fonts/mui.ttf",
+			"images/login_log.png",
+			"images/shuijiao.jpg",
+			"appjs/immersed.js",
+			"images/yuantiao.jpg",
+			"images/1.png",
+			"css/common.css",
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"js/update.js",
+			"appjs/jquery.js",
+			"images/no_pic.png",
+			"images/login.png",
+			"images/juhui.png",
+			"images/baoguangtuan.png",
+			"images/hudongba.png",
+			"images/chutuanzhai.png",
+			"images/5.png",
+			"images/daoyouci.png",
+			"images/2.png",
+			"images/3.png",
+			"images/qiuzhu.png",
+			"images/4.png",
+			"images/bz.png"
+		],
+		"refer": [
+			"guide.html",
+			"index-menu.html",
+			"template.html",
+			"search.html"
+		]
+	},
+	"search.html": {
+		"resources": [
+			"appjs/common.js",
+			"js/mui.min.js",
+			"css/common.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"appjs/immersed.js",
+			"appjs/jquery.js"
+		]
+	}
+}

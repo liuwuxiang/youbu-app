@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>互动</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+	</head>
+	<body>
+		<div class='main'>
+			<div class='header'>
+		    		<a class="mui-action-back mui-icon mui-icon-left-nav search_back"></a>
+		    		<span class='header_title'>互动吧</span>
+			</div>
+			<div class="content" id='interact'>
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='info'>
+							聚会主题
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='info'>
+							旅游线路
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='info'>
+							交通板块
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='info'>
+							学习专题
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='info'>
+							急救专题
+						</a>
+					</li>
+				</ul>
+			</div>
+	   </div>
+	</body>
+	<script src="./js/mui.min.js"></script>
+	<script>
+		//互动吧
+		$(document).on("click","#interact",function() {
+			//if (!mui.os.plus) {
+				mui.openWindow({
+					url: "interact_detail.html",
+					id: "interact_detail",
+					show: {
+						aniShow: 'slide-in-right',
+						duration: 300
+					}
+				});
+				return;
+			//}
+		});
+	</script>
+</html>

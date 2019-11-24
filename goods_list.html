@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+	</head>
+	<body>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-scroll-wrapper" style='height:100%;'>
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view mui-table-view-chevron">
+					
+				</ul>
+			</div>
+		</div>
+		<script src="./js/mui.min.js"></script>
+		<script>
+				mui.init({
+					pullRefresh: {
+						container: '#pullrefresh',
+						down: {
+							 contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						     contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						     contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+							callback: pulldownRefresh
+						},
+						up: {
+							auto: true,
+							contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+      						contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+      						callback: pullupRefresh
+						}
+					}
+				});
+				  /**下拉刷新具体业务实现 */
+				  var pageNo =0,
+				  pageSize = 10;
+				  function pulldownRefresh() {
+					  setTimeout(function() {
+							    var table = document.body.querySelector('.mui-table-view');
+							    var cells = document.body.querySelectorAll('.mui-table-view-cell');
+							    $.post(mui.path+"/app/guiderList?callback=?", {'pageNo':pageNo,'pageSize':pageSize}, function(result){
+							        $.each(result,function(k,v){
+								          var li = document.createElement('li');
+								          li.className = 'mui-table-view-cell';
+								          li.innerHTML = '<a class="mui-navigate-right">' + v.name + '</a>';
+								          //下拉刷新，新纪录插到最前面；
+								          table.insertBefore(li, table.firstChild);
+									    });
+								pageNo+=1;	
+								mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+								},"json");
+					    },1500);
+				  }
+				  
+				  function pullupRefresh() {
+						setTimeout(function() {
+							    var table = document.body.querySelector('.mui-table-view');
+							    var cells = document.body.querySelectorAll('.mui-table-view-cell');
+							    $.post(mui.path+"/app/guiderList?callback=?", {'pageNo':pageNo,'pageSize':pageSize}, function(result){
+							    	if(result.length>0){
+							    		$.each(result,function(k,v){
+								          var li = document.createElement('li');
+								          li.className = 'mui-table-view-cell';
+								          li.innerHTML = '<a class="mui-navigate-right">' + v.name + '</a>';
+								          //下拉刷新，新纪录插到最前面；
+								          table.appendChild(li);
+								        });
+								       mui('#pullrefresh').pullRefresh().refresh(true);
+							    	}else{
+							    		mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							    	}
+							    	pageNo+=1;
+								},"json");
+						}, 1500);
+					}
+				if (mui.os.plus) {
+					mui.plusReady(function() {
+						setTimeout(function() {
+							mui('#pullrefresh').pullRefresh().pullupLoading();
+						}, 1000);
+	
+					});
+				} else {
+					mui.ready(function() {
+						mui('#pullrefresh').pullRefresh().pullupLoading();
+					});
+				}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+	</head>
+	<body>
+		<div class='main'>
+			<div  class='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center'><span id='title'></span></div>
+			</div>
+			<div class='content'>
+				<div class='detail'>
+					<div style="padding:10px">导游基本信息</div>
+					<div style='text-align:center;'>
+						<img id='photo' src='' style='width:90%;height:150px;'>
+					</div>
+					<table>
+						<tr><td>导游姓名：</td> <td class='uname'></td></tr>
+				      	<tr><td>导游邮箱：</td> <td class='email'></td></tr>
+				      	<tr><td>导游证号：</td> <td class='certify'></td></tr>
+				      	<tr><td>昵称：</td> <td class='uname'></td></tr>
+				      	<tr><td>常住地址：</td> <td class='address'></td></tr>
+				      	<tr><td>导游词：</td> <td class='word'></td></tr>
+				      	<tr><td>工作经历：</td> <td class='experience'></td></tr>
+				      	<tr><td>擅长路线：</td> <td class='course'></td></tr>
+				      	<tr><td>兴趣爱好：</td> <td class='hobby'></td></tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<script src="./js/mui.min.js"></script>
+		<script>
+		
+		    if(mui.os.plus){
+				 mui.plusReady(function (){
+					 var self= plus.webview.currentWebview();
+					 var _id=self._id;
+					 var res=localStorage.getItem('guider');
+	        	     $("#photo").attr('src',res.photo);
+		             $(".uname").text(res.uname);
+		             $(".mobile").text(res.mobile);
+		             $(".email").text(res.email);
+		             $(".certify").text(res.certify);
+		             $(".address").text(res.address);
+		             $(".word").text(res.word);
+		             $(".experience").text(res.experience);
+		             $(".course").text(res.course);
+		             $(".hobby").text(res.hobby);
+				 });	
+			}
+			
+		</script>
+	</body>
+
+</html>

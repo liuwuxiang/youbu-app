@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>注册</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		
+		<style>
+			.valid_code{
+				display:inline-block;
+				height:50px;
+				line-height:50px;
+				background: #000;
+				margin-left: 5px;
+				cursor: pointer;
+				color:#fff;
+			}
+			.input{
+				height:70px;
+				line-height:70px;
+				width:100%;
+				text-align: center;
+				padding:10px;
+			}
+			.input input{
+				width:100%;
+				height:50px;
+				line-height: 50px;
+			}
+			.guide_form{
+				width: 100%;
+				text-align: center;
+			}
+		</style>
+	<body>
+		<div id='register' class='main register'>
+				<div  class='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center'><span>注册</span></div>
+				</div>
+				<div class='content' style='padding-top:0px'>
+					<div style='width:100%;height:60px;text-align:center;padding-top:30px;'>
+						<label><span>导游</span><input type="radio" name='type' data_check='0' checked></label>
+						<label><span>旅行社</span><input type="radio" name='type'  data_check='1'></label>
+					</div>
+					<div  class='guide_form'>
+						<div class='input'><input type='text' placeholder="输入手机号" class='mobile' id='mobile' ><!--onkeyup="valid_mobile($(this),$(this).val())"--></div>
+						<div class='input'><input type='text' placeholder="输入验证码" id='code' style='width:70%;'><span id='valid_code' class='valid_code' style='width:25%;margin-left:5%;'>验证码</span></div>
+						<div class='input'><input type='text' placeholder="输入密码" id='password'></div>
+						<div class='input'><input type='text' placeholder="请再次输入密码" id='repassword'></div>
+						<div class='input' style='padding-top:20px;cursor:pointer;'><span id='register_btn' class='register_btn' style='height:50px;line-height:50px;width:100%;display:block;'>注册</span></div>
+						<div class='input' style='padding:0px;cursor:pointer;height:50px;line-height: 50px;'><span id='register_login' class='mui-action-back register_login' style='text-align: center;'>登录</span></div>
+					</div>
+				</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+			//验证码，验证手机号码
+			function valid_mobile(phone){
+				var message='';
+				if(!phone){
+					message='请正确填写手机号码';
+				}else{
+					phone=Number(phone);
+				}
+				if(isNaN(phone)){
+					message='手机号必须为数字';
+				}else if(phone.toString().length!=11){
+					message='手机号必须为11位数字';
+				}
+				if(message){
+					mui.alert(message, "错误", "OK", null);  
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			//验证输入的内容
+			function valid(){
+				var mobile=$("#mobile").val(),
+				code=$("#code").val(),
+				password=$("#password").val(),
+				repassword=$("#repassword").val();
+				var message='';
+				var flag=true;
+				if(!mobile){
+					message='请输入正确的手机号码';
+					flag=false;
+				}else{
+					mobile=Number(mobile);
+				}
+				if(flag&&isNaN(mobile)){
+					message='输入的手机号必须为数字';
+					flag=false;
+				}else if(flag&&mobile.toString().length!=11){
+					message='输入的手机号必须为11位数字';
+					flag=false;
+				}
+				if(flag&&!code){
+					message='请输入正确的验证码';
+					flag=false;
+				}
+				if(flag&&!password){
+					message='请输入正确的密码';
+					flag=false;
+				}
+				if(flag&&!repassword){
+					message='请再一次输入正确的密码';
+					flag=false;
+				}
+				if(flag&&password!=repassword){
+					message='两次输入的密码不正确，请重新输入';
+					flag=false;
+				}
+				if(!flag&&message){
+					mui.alert(message, "错误", "OK", null);  
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			document.getElementById('valid_code').addEventListener('tap', function(){
+				var num=60;
+				var number=$("#valid_code").text();
+				if(number.indexOf('s')!=-1){
+					return;
+				}
+				var mobile=$("#mobile").val();
+				 if(valid_mobile(mobile)){
+				 	var setTime=setInterval(function(){
+				 		num-=1;
+				 		if(num>=0){
+				 			$("#valid_code").text(num+' s');	
+				 		}else{
+				 			 //一分钟清空验证码
+						    localStorage.setItem("code","");
+				 			$("#valid_code").text('重新获取');
+				 			clearInterval(setTime);
+				 		}
+				 	},1000);
+				 	 $.ajax({
+					    	url:mui.path+"/sms/send?callback=?",
+					        dataType:'json',  
+					        type:'post',
+					        data:{'mobile':mobile},
+					        success:function(result){
+					        		 var str=JSON.stringify(result);
+					        		 result=JSON.parse(str);
+					        		 var status=result.chunk.split("\n")[0].split(",")[1];
+					 	 	 		 if(status){
+					 	 	 		 	 localStorage.setItem('code',result.code);
+					 	 	 		 	 mui.toast("验证码发送成功，请注意接收！");
+					 	 	 		 }else{
+					 	 	 		 	 mui.toast("验证码发送失败，请检查稍后重试！");
+					 	 	 		 }
+					        	},
+					        	error:function(){
+					        		mui.message();
+					        	}
+					     });
+				 }
+			});
+			
+			
+		    //登录  检查网络连接状态
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					}
+				});
+			}
+			
+			//注册
+			document.getElementById("register_btn").addEventListener('tap', function(){
+				var data={};
+				var url =mui.path+'/app/register?callback=?';
+			    if(valid()&&network){
+						var mobile=$("#mobile").val(),
+						password=$("#password").val(),
+						code=$("#code").val();
+						data.mobile=mobile;
+						data.name=mobile;
+						data.password=password;
+						if(code!=localStorage.getItem("code")){
+							mui.alert("验证码填写不正确");
+							return false;
+						}
+						data.appcode=code;
+						data.type="guider";//导游注册  travel旅行社注册
+					    $.ajax({
+					    	url:url,
+					        dataType:'json',  
+					        type:'post',
+					        data:{'data':data},
+					        success:function(result){
+					        		var res=eval('('+result+')');
+					        	      if(!res.success){
+								        // 如果密码错误，提示一下信息  
+								        closeWaiting();
+								        mui.alert(res.message);
+								      }else{
+								      	 mui.toast("注册成功，正在跳转，请稍等......");
+								      	 mui.isLogin();
+								      	 	mui.openWindow({
+												url: "info.html",
+												id: "info",
+												show: {
+													aniShow: 'slide-in-right',
+													duration: 300
+												}
+											});
+								}
+						}
+					});
+				}else{
+					mui.message(); 
+				}
+			});
+		</script>
+	</body>
+
+</html>

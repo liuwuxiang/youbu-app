@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>搜索</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			
+		</style>
+		</head>
+		<body>
+			 <div class='main'>
+	 			<div class='header'>
+					<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+					<div class='title_center'><span>导游词</span></div>
+				</div>
+		    </div>
+			<script src="js/mui.min.js"></script>
+			<script>
+				mui.init({
+					subpages:[{
+						url:'words_list.html',
+						id:'words_list',
+						styles:{
+							top: '60px',
+							bottom: '0px',
+						}
+					}]
+				});
+				$("#search_btn").click(function(){
+					var text=$("#search_text").val();
+					if(text){
+						 var guider_list=plus.webview.getWebviewById("guider_list"); //根据ID获取子页面
+                         $.fire(guider_list,'loadding',text,1); // $.fire(目标页面,子页面的函数,要传的值)
+					}else{
+						mui.toast('搜索关键字不能为空');
+					}
+				});
+			</script>
+		</body>
+</html>

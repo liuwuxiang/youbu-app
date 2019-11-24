@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>搜索</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.search_text{
+				     border-bottom: 1px solid #fff !important;
+   					 text-align: left;
+   					 background: #000 !important;
+   					 position: relative;
+   					 left:10px;
+			}
+		</style>
+		</head>
+		<body>
+			 <div class='main'>
+	 			<div  class='header' id='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center' style='color:#ccc;'>
+							<input id='search_text' class='search_text' type='text' placeholder="请输入导游或旅行社搜索">
+    						<span id='search_btn' class='search_btn'>搜索</span>
+						</div>
+				</div>
+			</div>
+			<div class="mui-content"></div>
+			<script src="js/mui.min.js"></script>
+			<script>
+				mui.init({
+					gestureConfig:{
+						doubletap:true
+					},
+					subpages:[{
+						url:'guider_list.html',
+						id:'guider_list',
+						styles:{
+							top: '64px',
+							bottom: '0px',
+						},
+						extras:{
+						   pageNo:1,
+					       name:''
+					    }
+					}]
+				});
+				
+				var contentWebview = null;
+				document.getElementById("header").addEventListener('doubletap',function () {
+					if(contentWebview==null){
+						contentWebview = plus.webview.currentWebview().children()[0];
+					}
+					contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+				});
+				
+				$("#search_btn").click(function(){
+					var text=$("#search_text").val();
+					if(text){
+						 var guider_list=plus.webview.getWebviewById("guider_list"); //根据ID获取子页面
+						 mui.fire(guider_list,'update',{'name':text,'pageNo':1});
+					}else{
+						mui.toast('搜索关键字不能为空');
+					}
+				});
+			</script>
+		</body>
+</html>

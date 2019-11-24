@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>LM</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.save{
+				width: 100%;
+			    height: 40px;
+			    line-height: 40px;
+			    background: #000;
+			    color: #fff;
+			    text-align: center;
+			    position: fixed;
+			    bottom: 0;
+			}
+			.text-left{
+				float:left;
+			}
+			.text-right{
+				float:right;
+				text-align: right;
+			}
+			.mui-table-view li{
+				padding-left:15px;
+				padding-right:0px;
+				padding-top:0px;
+				padding-bottom:0px;
+			    width:95%;
+			    height:45px !important;
+			    line-height: 45px;
+			}
+			.w_content{
+				width: 70%;
+				word-break: break-word;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.content{
+				padding-top:0px !important;
+				top:20px !important;
+			}
+		</style>
+	</head>
+	<body contextmenu="return false;">
+		<div class='main'>
+			<div class='header'>
+				<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+				<div class='title_center'><span>我的资料</span></div>
+			</div>
+			<div class='content'>
+						<input type='hidden' id='_id'>
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>手机号码</span>
+									<span class='text-right' id='mobile'></span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>昵称</span>
+									<span class='text-right' id='uname'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>邮箱</span>
+									<span class='text-right' id='email'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>性别</span>
+									<span class='text-right' id='sex'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>身份证号码</span>
+									<span class='text-right' id='uuid'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>导游证号</span>
+									<span class='text-right' id='certify'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>出生年月</span>
+									<span class='text-right' id='age'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left' >常住地址</span>
+									<span class='text-right' class='w_content' id='address'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>导游词</span>
+									<span class='text-right w_content' id='word'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>工作经历</span>
+									<span class='text-right w_content'  id='experience'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>擅长路线</span>
+									<span class='text-right w_content'  id='course'>未设置</span>
+								</a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>
+									<span class='text-left'>兴趣爱好</span>
+									<span class='text-right w_content' id='hobby'>未设置</span>
+								</a>
+							</li>
+						</ul>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+			//进入页面进行登录校验
+			if(mui.os.plus){
+				mui.plusReady(function(){
+				 login_success(); 
+				});
+			}
+			
+			function login_success(){
+				if(localStorage.getItem('user')){
+					 var user=JSON.parse(localStorage.getItem('user'));
+					 $("#id").val(user._id);
+					 $("#mobile").text(user.mobile);
+					 if(user.uname){
+					 	 $("#uname").text(user.uname);
+					 }else{
+					 	$("#uname").text("未设置");
+					 }
+					 if(user.email){
+					 	$("#email").text(user.email);
+					 }else{
+					 	$("#email").text("未设置");
+					 }
+					  if(user.sex){
+					 	 $("#sex").text(user.sex);
+					 }else{
+					 	$("#sex").text("未设置");
+					 }
+					 if(user.uuid){
+					 	 $("#uuid").text(user.uuid);
+					 }else{
+					 	$("#uuid").text("未设置");
+					 }
+					 if(user.certify){
+					 	 $("#certify").text(user.certify);
+					 }else{
+					 	$("#certify").text("未设置");
+					 }
+					 if(user.age){
+					 	 $("#age").text(user.age);
+					 }else{
+					 	$("#age").text("未设置");
+					 }
+					 if(user.address){
+					 	$("#address").text(user.address);
+					 }else{
+					 	$("#address").text("未设置");
+					 }
+					 if(user.word){
+					 	$("#word").text(user.word);
+					 }else{
+					 	$("#word").text("未设置");
+					 }
+					 if(user.experience){
+					 	 $("#experience").text(user.experience);
+					 }else{
+					 	$("#experience").text("未设置");
+					 }
+					 if(user.course){
+					 	 $("#course").text(user.course);
+					 }else{
+					 	$("#course").text("未设置");
+					 }
+					 if(user.hobby){
+					 	 $("#hobby").text(user.hobby);
+					 }else{
+					 	$("#hobby").text("未设置");
+					 }
+				}else{
+					mui.toast("登录失效，请重新登录");
+				}
+				return;
+			}
+				
+			$(document).on("click",".text-right",function(){
+				 	 var editArea="";
+					 var user=JSON.parse(localStorage.getItem('user'));
+					 var title=$(this).text();
+					 var _id=user._id;
+					 if(title=="未设置"){
+					 	title="";
+					 }
+					 if(_id){
+					 	 var filed=$(this).attr("id");
+						 if(title=="未设置"){
+						 	title="";
+						 }
+						 if(filed=="sex"){
+						 	var check="";
+						 		if(title=='男'||title==""){
+						 			editArea+="男<input type='radio' name='title' checked class='radio' value='男'>";
+						 		}else{
+						 			editArea+="男<input type='radio' name='title'  class='radio' value='男'>";
+						 		}
+						 		if(title=='女'){
+						 			editArea+="女<input type='radio' name='title' checked class='radio' value='女'>";
+						 		}else{
+						 			editArea+="女<input type='radio' name='title' class='radio' value='女'>";
+						 		}
+						 }else{
+						 	editArea="<textarea class='title' id='title' name='title'>"+title+"</textarea>";
+						 }
+						 var main = plus.webview.getWebviewById("edit");
+						 mui.fire(main,'update',{'_id':_id,'filed':filed,'title':title,"editArea":editArea});
+						 setTimeout(function(){
+						 	 mui.openWindow({
+								url: "edit.html",
+								id: "edit",
+								extras:{
+							        'title':title,
+							        '_id':_id,
+							        'filed':filed,
+							        'editArea':editArea
+							    },
+								show: {
+									aniShow: 'slide-in-right',
+									duration: 300
+								}
+							});
+						 },1000);
+					 }else{
+					 	mui.toast("登录失效，请重新登录");
+					 }
+				});
+				
+				window.addEventListener("updateHeader", function(e) {
+					var filed = e.detail.filed;
+					var title = e.detail.title;
+				    $("#"+filed).text(title);
+				});
+				
+				mui.init();
+				mui.back = function() {
+					 mui.openWindow({
+						url: "setting.html",
+						id: "setting",
+						show: {
+							aniShow: 'slide-in-left',
+							duration: 30
+						}
+					});
+				}
+		</script>
+	</body>
+
+</html>

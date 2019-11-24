@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>注册</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.valid_code{
+				display:inline-block;
+				height:50px;
+				line-height:50px;
+				background: #000;
+				margin-left: 5px;
+				cursor: pointer;
+				color:#fff;
+			}
+			.input{
+				height:70px;
+				line-height:70px;
+				width:100%;
+				text-align: center;
+				padding:10px;
+			}
+			.input input{
+				width:100%;
+				height:50px;
+				line-height: 50px;
+			}
+			.guide_form{
+				width: 100%;
+				text-align: center;
+			}
+		</style>
+	<body>
+		<div id='register' class='main register'>
+				<div  class='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center'><span>导游注册下一步</span></div>
+				</div>
+				<form style='height:90%;width:100%;position:relative;top:10%'>
+					<div  class='guide_form'>
+						<div class='input'><input type='text' placeholder="输入手机号" class='mobile' id='mobile' ><!--onkeyup="valid_mobile($(this),$(this).val())"--></div>
+						<div class='input'><input type='text' placeholder="输入验证码" style='width:70%;'><span id='valid_code' class='valid_code' style='width:25%;margin-left:5%;'>验证码</span></div>
+						<div class='input'><input type='text' placeholder="输入密码"></div>
+						<div class='input'><input type='text' placeholder="重复输入密码"></div>
+						<div class='input' style='padding-top:30px;cursor:pointer;'><span id='register_btn' class='register_btn' style='height:50px;line-height:50px;width:100%;display:block;'>下一步</span></div>
+						<div class='input' style='padding-top:20px;cursor:pointer;'><span id='register_login' class='mui-action-back register_login' style='text-align: center;'>登录</span></div>
+					</div>
+				</form>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+		    //登录  检查网络连接状态
+			var network = true;
+			if(mui.os.plus){
+				mui.plusReady(function () {
+					if(plus.networkinfo.getCurrentType()==plus.networkinfo.CONNECTION_NONE){
+						network = false;
+					}
+				});
+			}
+			
+			//注册
+			document.getElementById("register_btn").addEventListener('tap', function(){
+				var data={};
+				var url =mui.path+'/app/register?callback=?';
+				if(network){
+					var name=document.getElementById("name").value,
+					password=document.getElementById("password").value;
+					data.name=name;
+					data.password=password;
+					data.type="guider";//导游注册  travel旅行社注册
+					$.post(url,data,function(response,status,xhr){
+				 	 	 	if(response){
+				 	 	 		mui.toast("注册成功，正在跳转......");
+				 	 	 	}
+					    }).error(function(xhr,errorText,errorType){
+					        mui.alert("<网络连接失败，请重新尝试一下>", "错误", "OK", null);  
+					    });
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			});
+		</script>
+	</body>
+
+</html>

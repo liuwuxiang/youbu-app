@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<style>
+			.words_list{
+			    padding:25px 0 0 0;
+				margin: 0;
+				
+			}
+			.mui-table-view-cell{
+				    width: 100% !important;
+    				padding: 10px !important;
+			}
+			.words_list .mui-table-view-cell{
+				height:auto !important;
+			}
+			.words_img{
+				height:150px
+			}
+			.words_list_info{
+				width:100%;
+				text-align: center;
+				background: #ebebeb;
+			}
+			.words_list_info div{
+				overflow: hidden;
+			    white-space: nowrap;
+			    text-overflow: ellipsis;
+			}
+		</style>
+	</head>
+	<body>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-scroll-wrapper" style='height:100%;'>
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view mui-table-view-chevron words_list">
+					 
+				</ul>
+			</div>
+		</div>
+		<script src="./js/mui.min.js"></script>
+		<script>
+			var pageNo=1,pageSize=10;
+			mui.init({
+				pullRefresh: {
+						container: '#pullrefresh',
+						down: {
+							callback: pulldownRefresh
+						},
+						up: {
+							contentrefresh: '正在加载...',
+							contentnomore:'暂无数据',
+							callback: pullupRefresh
+						}
+				}
+			});
+			
+			function loadding(no,name){
+				if(name){
+					pullupRefresh(no,name);
+				}
+			}
+				/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				//setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+				//}, 1500);
+			}
+			
+			/**
+			 * 上拉加载具体业务实现
+			 */
+			function pullupRefresh(no,name) {
+				if(no){
+					pageNo=no;
+				}
+				setTimeout(function() {
+					var table = document.body.querySelector('.mui-table-view');
+					var cells = document.body.querySelectorAll('.mui-table-view-cell');
+					var data={};
+				    data={'query':{'name':name,'pageNo':pageNo,'pageSize':pageSize}};
+				    $.ajax({
+				    	url:mui.path+"/app/wordsList?callback=?",
+				    	data:data,
+				    	dataType:'json',  
+				        type:'post',
+				    	success:function(result){
+				    		var res=result;
+					    	if(res&&res.length>0){
+					    		$.each(res,function(k,v){
+						          var li = document.createElement('li');
+						          var html="<a class='mui-navigate-right' data_id="+v._id+">";
+						          html+="<div>";
+						          var photo="";
+						            if(v.photo){
+						            	photo=mui.photo+v.photo;
+						            }else{
+						            	photo="http://www.52huize.com:5000/upload/image/20160422180433.jpg";
+						            }
+						          	 html+="<div class='words_img'><img style='width:100%;height:150px' src='"+photo+"'></div>";
+						          	 html+="<div class='words_list_info'>";
+						          	 html+=v.name;
+						          	 html+="</div>";
+						           html+="</div>";
+						           html+="</a>";
+						          li.className = 'mui-table-view-cell';
+						          li.innerHTML = html;
+						          //下拉刷新，新纪录插到最前面；
+						          table.appendChild(li);
+					    		});
+					    		pageNo+=1;
+					    		mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+					    	}else{
+					    		mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了
+					    	}
+				    	},
+				    	error:function(){
+				    		
+				    	}
+				    });
+				}, 1500);
+			}
+			if (mui.os.plus) {
+				mui.plusReady(function() {
+					setTimeout(function() {
+						mui('#pullrefresh').pullRefresh().pullupLoading();
+					}, 1000);
+
+				});
+			} else {
+				mui.ready(function() {
+					mui('#pullrefresh').pullRefresh().pullupLoading();
+				});
+			}
+			
+			//查看详情
+			$(document).on("click",".mui-navigate-right",function(){
+				mui.openWindow({
+					url: "words_detail.html",
+					id: "words_detail",
+					extras:{"_id":$(this).attr('data_id')},
+					show: {
+						aniShow: 'slide-in-right',
+						duration: 300
+					}
+				});
+			});
+			
+		</script>
+	</body>
+
+</html>

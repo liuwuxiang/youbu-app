@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>设置</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.info img{
+			    border: 0;
+			    width: 50px;
+			    height: 50px;
+			    float: right;
+			    position: relative;
+			    right: 10%;
+			}
+			.mui-table-view-cell{
+				padding-left:15px;
+				padding-right:0px;
+				padding-top:0px;
+				padding-bottom: 0px;
+				height:45px;
+				line-height: 45px;
+			}
+			.mui-table-view-cell a{
+				height:45px;
+				line-height: 45px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='main'>
+			<div class='header'>
+		    		<div class='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center'><span>设置</span></div>
+				</div>
+			</div>
+			<div class="content info">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell" id='photo' style='height:60px;'>
+						<a class="mui-navigate-right"  style='height:50px;padding:10px 0px;'>
+							<span>头像</span>
+							<img src='images/1.png' id="head-img">
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right"  id='info'>
+							个人信息
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='update'>
+							版本更新
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right" id='login_out'>
+							退出登录
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	<script src="./js/mui.min.js"></script>
+	<script>
+	//更换头像
+	mui(".info").on("tap", "#photo", function(e) {
+					//if(mui.os.plus){
+						var a = [{
+							title: "拍照"
+						}, {
+							title: "从手机相册选择"
+						}];
+						plus.nativeUI.actionSheet({
+							title: "修改头像",
+							cancel: "取消",
+							buttons: a
+						}, function(b) {
+							switch (b.index) {
+								case 0:
+									break;
+								case 1:
+									getImage();
+									break;
+								case 2:
+									galleryImg();
+									break;
+								default:
+									break
+							}
+						})	
+					//}
+					
+				});
+				function getImage() {
+					var c = plus.camera.getCamera();
+					c.captureImage(function(e) {
+						plus.io.resolveLocalFileSystemURL(e, function(entry) {
+							var s = entry.toLocalURL() + "?version=" + new Date().getTime();
+							document.getElementById("head-img").src = s;
+							//变更大图预览的src
+							//目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+							document.querySelector("#__mui-imageview__group .mui-slider-item img").src = s + "?version=" + new Date().getTime();;;
+						}, function(e) {
+							console.log("读取拍照文件错误：" + e.message);
+						});
+					}, function(s) {
+						console.log("error" + s);
+					}, {
+						filename: "_doc/head.jpg"
+					})
+				}
+				
+				// 添加文件
+			    var f1=null;
+				function appendFile(path){
+					  var img = new Image();
+					        img.src = path;        // 传过来的图片路径在这里用。
+					        img.onload = function () {
+					            var that = this;
+					            //生成比例 
+					            var w = that.width,
+					                h = that.height,
+					                scale = w / h; 
+					                w = 480 || w;              //480  你想压缩到多大，改这里
+					                h = w / scale;
+					
+					            //生成canvas
+					            var canvas = document.createElement('canvas');
+					            var ctx = canvas.getContext('2d');
+					            $(canvas).attr({width : w, height : h});
+					            ctx.drawImage(that, 0, 0, w, h);
+					            var base64 = canvas.toDataURL('image/jpeg', 1 || 0.8 );   //1最清晰，越低越模糊。有一点不清楚这里明明设置的是jpeg。弹出 base64 开头的一段 data：image/png;却是png。哎开心就好，开心就好
+					           f1 =base64;   // 把base64数据丢过去，上传要用。
+					           var pic = document.getElementById("img_demo");    
+					           pic.src = base64;                //这里丢到img 的 src 里面就能看到效果了
+					           debugger
+					           console.log(f1);
+					            var wt=plus.nativeUI.showWaiting();
+					     		var url = 'http://www.52huize.com:5000/upload';
+					            var dataType ='json';
+					            //发送数据  
+					            var data = { 
+					                files1:f1       //base64数据        
+					            };    
+					            $.post(url, f1,function(response,status,xhr){
+					            	console.log(response);
+					            }, dataType);
+					}
+					        
+				}
+				function galleryImg() {
+					plus.gallery.pick(function(a) {
+						plus.io.resolveLocalFileSystemURL(a, function(entry) {
+							plus.io.resolveLocalFileSystemURL("_doc/", function(root) {
+								root.getFile("head.jpg", {}, function(file) {
+									var localurl = entry.toLocalURL();
+				            		appendFile(localurl);
+									//文件已存在
+									file.remove(function() {
+										entry.copyTo(root, 'head.jpg', function(e) {
+												var e = e.fullPath + "?version=" + new Date().getTime();
+												document.getElementById("head-img").src = e;
+												//变更大图预览的src
+												//目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+												document.querySelector("#__mui-imageview__group .mui-slider-item img").src = e + "?version=" + new Date().getTime();;
+											},
+											function(e) {
+												console.log('copy image fail:' + e.message);
+											});
+									}, function() {
+										console.log("delete image fail:" + e.message);
+									});
+								}, function() {
+									//文件不存在
+									entry.copyTo(root, 'head.jpg', function(e) {
+											var path = e.fullPath + "?version=" + new Date().getTime();
+											document.getElementById("head-img").src = path;
+											//变更大图预览的src
+											//目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+											document.querySelector("#__mui-imageview__group .mui-slider-item img").src = path;
+										},
+										function(e) {
+											console.log('copy image fail:' + e.message);
+										});
+								});
+							}, function(e) {
+								console.log("get _www folder fail");
+							})
+						}, function(e) {
+							console.log("读取拍照文件错误：" + e.message);
+						});
+					}, function(a) {}, {
+						filter: "image"
+					})
+				};
+	
+	document.getElementById("info").addEventListener('tap', function(){
+			if(mui.os.plus) {
+				mui.openWindow({
+					url: "info.html",
+					id: "info",
+					show: {
+						aniShow: 'slide-in-right',
+						duration: 300
+					}
+				});
+				return;
+			}
+	});
+	
+	document.getElementById("update").addEventListener('tap', function(){
+			mui.toast("暂无版本更新，请稍后重试");
+	});
+	
+	document.getElementById("login_out").addEventListener('tap', function(){
+		var btnArray = ['确定', '取消'];
+			mui.confirm('您确定要退出登录吗？', '温馨提示', btnArray, function(e){
+				if (e.index ==0) {
+					mui.LoginOut();
+				}else{
+					return;
+				}
+			});
+     });
+     
+    mui.init();
+	mui.back = function() {
+		 mui.openWindow({
+			url: "index.html",
+			id: "index",
+			show: {
+				aniShow: 'slide-in-left',
+				duration: 300
+			}
+		});
+	}
+	</script>
+	</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<style>
+			.mui-table-view-cell{
+				height: 150px;
+			}
+			.guider_img{
+				float:left;
+				padding-right:10px;
+				height: 150px
+			}
+			.guider_list_info{
+				width: 85%;
+			}
+			.guider_list_info div{
+				overflow: hidden;
+			    white-space: nowrap;
+			    text-overflow: ellipsis;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='header'>
+    		<a class="mui-action-back mui-icon mui-icon-left-nav search_back"></a>
+    		<span class='header_title'>实时爆料</span>
+		</div>
+		<div class='content' style='padding:5px;'>
+		</div>
+		<script src="./js/mui.min.js"></script>
+		<script>
+		if(mui.os.plus){
+				 mui.plusReady(function (){
+					 var self= plus.webview.currentWebview();
+					 var _id = self._id;
+					 if(_id){
+					 	var data={};
+					 	    data={'data':{'_id':_id}};
+					 	 $.ajax({
+					    	url:mui.path+"/app/post?callback=?",
+					        dataType:'json',  
+					        type:'post',
+					        data:data,
+					        success:function(results){
+						        		var res=eval('('+results+')');
+						        	      if(!res.success) {
+									        // 如果密码错误，提示一下信息  
+									        mui.alert(res.message);
+									      }else{
+									      	var html="";
+											html+="<div class='report_detail'>";
+												html+="<div class='report_title'>";
+													html+="<img src='images/1.png'>";
+												html+="</div>";
+												html+="<div class='report_title'>";
+													html+="<span>中国平安</span>";
+													html+="<span>2016-05-01 12:32</span>";
+												html+="</div>";
+												html+="<div class='report_title' style='float:right'>";
+													html+="<span class='more'></span>";
+												html+="</div>";
+											html+="</div>";
+											html+="<div class='report'>导航专贴，禁回，请各位谨记！为了休闲、娱乐、";
+												html+="探亲访友或者商务目的进行的旅行活动统称为旅游。 旅游是人们为寻求精神上的愉快感受而进行的非定居性旅行和在游览";
+											html+="</div>";
+									      	$(".content").html(html);
+									      }
+						        },
+						        error:function(xhr,type,errorThrown){
+						            //mui.alert("<网络连接失败，请重新尝试一下>", "错误", "OK", null);  
+						        } 
+						});
+					 }
+				})
+			}
+		</script>
+	</body>
+
+</html>

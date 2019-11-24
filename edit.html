@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>修改资料</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="./css/app.css" />
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.input{
+				width:100%;
+				text-align: center;
+				padding:10px;
+			}
+			.input input{
+				height:50px;
+				line-height: 50px;
+				width:100%;
+			}
+			.edit{
+				height:50px;
+				line-height: 50px;
+				display: block;
+				background: #000;
+    			color: #fff;
+    			font-size: 25px;
+			}
+			.title{
+				/*border-top: none;
+			    border-left: 0;
+			    border-right: none;
+			    border-bottom: 1px solid red;*/
+			    height:300px;
+			    word-break:break-all;
+			}
+			.radio{
+				width: 20px !important;
+				height: 20px !important;
+				margin-right: 15px !important;
+				position: relative;
+				top: 5px;
+			}
+		</style>
+	<body>
+		<div  class='main'>
+			<div class='header'>
+				<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+				<div class='title_center'><span><h></h>设置</span></div>
+			</div>
+			<div class='content' style='padding:0'>
+				<form style='height:100%'>
+					<div style='height:80%;width:100%;text-align: center;'>
+						<input type='hidden' id='_id'>
+						<input type='hidden' id='filed'>
+						<div class='input' id='editArea'></div>
+						<div class='input'><span id='edit' class='edit'>保存</span></div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+		
+			if(mui.os.plus){
+				 mui.plusReady(function (){
+					 var self= plus.webview.currentWebview();
+					 var _id = self._id;
+					 var filed = self.filed;
+					 var title = self.title;
+					 var editArea=self.editArea;
+					 if(editArea){
+					 	$("#editArea").html(editArea);
+					 }
+					 if(filed){
+					 	$("#filed").val(filed);
+					 }
+					 if(_id){
+					 	$("#_id").text(_id);
+					 }
+				})
+			}
+			
+			//验证输入的内容
+			function valid(){
+				var title=$("*[name='title']").val();
+				var flag=true;
+				var message="";
+				if(!title){
+					message=tip;
+					flag=false;
+				}
+				if(!flag){
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			//修改密码
+			document.getElementById('edit').addEventListener('tap', function() {
+				if(valid()){
+					var title=$("*[name='title']").val();
+					filed=$("#filed").val(),
+					user=JSON.parse(localStorage.getItem('user'));
+					if(filed=="sex"){
+						title=$("*[name='title']:checked").val()
+					}
+					var json={};
+					json[filed]=title;
+					json['_id']=user._id;
+						 $.ajax({
+						    	url:mui.path+'/app/guiderEdit?callback=?',
+						        dataType:'json', 
+						        type:'post',
+						        data:{"data":json},
+						        success:function(results){
+						        		var res=eval('('+results+')');
+						        	      if(!res) {
+									        // 如果密码错误，提示一下信息  
+									        closeWaiting();
+									        mui.alert(res.message,function(){
+									          login_fail();
+									        });
+									      }else{
+									      	 localStorage.setItem('user',JSON.stringify(res));
+									      	 login_success();
+									      }
+						        },
+						        error:function(xhr,type,errorThrown){
+						            mui.message();
+						        } 
+						});
+						var main = plus.webview.getWebviewById("info");
+							mui.fire(main,'updateHeader',{'title':title,'filed':filed});
+							mui.toast("保存成功");
+							mui.isLogin();
+							setTimeout(function(){
+								mui.openWindow({
+									url: "info.html",
+									id: "info",
+									extras:{
+							         'title':title,
+							         'filed':filed
+							       },
+									show: {
+										aniShow: 'slide-in-left',
+										duration: 500
+									}
+								});
+							},2000);
+				}else{
+					mui.message();
+				}
+			});
+			 
+			window.addEventListener("update", function(e){
+				var _id = e.detail._id;
+				var filed = e.detail.filed;
+				var title = e.detail.title;
+				var editArea=e.detail.editArea;
+				console.log(editArea);
+				if(editArea){
+					$("#editArea").html(editArea);
+				}else{
+					$("#editArea").html("<textarea class='title' id='title' name='title'>"+title+"</textarea>");
+				}
+				$("#_id").val(_id);
+				$("#filed").val(filed);
+			});
+		</script>
+	</body>
+
+</html>

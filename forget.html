@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>找回密码</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<link rel="stylesheet" href="./css/common.css" type="text/css" charset="utf-8"/>
+		<script type="text/javascript" src="./appjs/common.js"></script>
+		<script type="text/javascript" src="./appjs/immersed.js" ></script>
+		<script type="text/javascript" src="./appjs/jquery.js" ></script>
+		<style>
+			.valid_code{
+				display:inline-block;
+				height:50px;
+				line-height:50px;
+				background: #000;
+				margin-left: 5px;
+				cursor: pointer;
+				color:#fff;
+			}
+			.input{
+				height:70px;
+				line-height:70px;
+				width:100%;
+				text-align: center;
+				padding:10px;
+			}
+			.input input{
+				height:50px;
+				line-height: 50px;
+				width:100%;
+			}
+			.editpass{
+				height:50px;
+				line-height: 50px;
+				display: block;
+				background: #000;
+    			color: #fff;
+    			font-size: 25px;
+    			
+			}
+		</style>
+	<body>
+		<div id='forget' class='main forget'>
+			<div class='header'>
+						<div class='mui-action-back mui-icon mui-icon-left-nav title_left'></div>
+						<div class='title_center'><span>找回密码</span></div>
+			</div>
+			<div class='content' style='padding:0'>
+				<form style='height:100%'>
+					<div style='height:80%;width:100%;text-align: center;' class='login_form' >
+						<div class='input'><input type='text' placeholder="输入手机号" class='mobile' id='mobile' ></div>
+						<div class='input'><input type='text' placeholder="输入验证码" style='width:70%;' id='code'><span id='valid_code' class='valid_code' style='width:25%;margin-left:5%;'>验证码</span></div>
+						<div class='input'><input type='text' placeholder="输入密码" id='password'></div>
+						<div class='input'><input type='text' placeholder="请再次输入密码" id='repassword'></div>
+						<div class='input' style='padding-top:20px;'><span id='editpass' class='editpass'>修改密码</span></div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+			Init();
+			function Init(){
+				//设置底部高度
+				$(".header div").css('line-height',$(".header").height()+"px");
+			}
+			
+			//验证码，验证手机号码
+			function valid_mobile(phone){
+				var message='';
+				if(!phone){
+					message='请正确填写手机号码';
+				}else{
+					phone=Number(phone);
+				}
+				if(isNaN(phone)){
+					message='手机号必须为数字';
+				}else if(phone.toString().length!=11){
+					message='手机号必须为11位数字';
+				}
+				if(message){
+					mui.alert(message, "错误", "OK", null);  
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			document.getElementById('valid_code').addEventListener('tap', function(){
+				var mobile=$("#mobile").val();
+				 if(valid_mobile(mobile)){
+				 	var num=60;
+				 	var setTime=setInterval(function(){
+				 		num-=1;
+				 		if(num>=0){
+				 			$("#valid_code").text(num+' s');	
+				 		}else{
+				 			$("#valid_code").text('重新获取');
+				 			clearInterval(setTime);
+				 		}
+				 	},1000);
+			 		 $.ajax({
+				    	url:mui.path+"/sms/send?callback=?",
+				        dataType:'json',  
+				        type:'post',
+				        data:{'mobile':mobile},
+				        success:function(result){
+				        		 var status=result.chunk.split("\n")[0].split(",")[1];
+				 	 	 		 if(status){
+				 	 	 		 	 localStorage.setItem('code',result.code);
+				 	 	 		 	 mui.toast("验证码发送成功，请注意接收！");
+				 	 	 		 }else{
+				 	 	 		 	 mui.toast("验证码发送失败，请检查稍后重试！");
+				 	 	 		 }
+				        	},
+				        	error:function(){
+				        		//mui.alert("<网络连接失败，请重新尝试一下>", "错误", "OK", null);  
+				        	}
+				     });
+				 }
+			});
+			
+			//验证输入的内容
+			function valid(){
+				var mobile=$("#mobile").val(),
+				code=$("#code").val(),
+				password=$("#password").val(),
+				repassword=$("#repassword").val();
+				var message='';
+				var flag=true;
+				if(!mobile){
+					message='请输入正确的手机号码';
+					flag=false;
+				}else{
+					mobile=Number(mobile);
+				}
+				if(flag&&isNaN(mobile)){
+					message='输入的手机号必须为数字';
+					flag=false;
+				}else if(flag&&mobile.toString().length!=11){
+					message='输入的手机号必须为11位数字';
+					flag=false;
+				}
+				if(flag&&!code){
+					message='请输入正确的验证码';
+					flag=false;
+				}
+				if(flag&&!password){
+					message='请输入正确的密码';
+					flag=false;
+				}
+				if(flag&&!repassword){
+					message='请再一次输入正确的密码';
+					flag=false;
+				}
+				if(flag&&password!=repassword){
+					message='两次输入的密码不正确，请重新输入';
+					flag=false;
+				}
+				if(!flag&&message){
+					mui.alert(message, "错误", "OK", null);  
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			//修改密码
+			document.getElementById('editpass').addEventListener('tap', function(){
+				var data={};
+				var url =mui.path+'/app/editPassword?callback=?';
+				if(valid()&&mui.isNetwork()){
+					var mobile=$("#mobile").val(),
+					password=$("#password").val();
+					data.password=password;
+					$.ajax({
+					    	url:url,
+					        dataType:'json',  
+					        type:'post',
+					        data:{'data':data},
+					        success:function(result){
+			        		  var res=eval('('+result+')');
+			        	      if(!res.success){
+						        // 如果密码错误，提示一下信息  
+						        closeWaiting();
+						        mui.alert(res.message);
+						      }else{
+						      	mui.toast("密码修改成功，正在跳转首页，请稍等......");
+				 	 	 		//登录校验
+				 	 	 		mui.openWindow({
+									url: "index.html",
+									id: "index",
+									show: {
+										aniShow: 'slide-in-right',
+										duration: 300
+									}
+								});
+							}
+					    };
+					})
+				}else{
+					mui.toast("当前网络不给力，请稍后再试");
+				}
+			});
+		</script>
+	</body>
+
+</html>
